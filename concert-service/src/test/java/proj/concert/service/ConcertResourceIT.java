@@ -3,8 +3,7 @@ package proj.concert.service;
 import org.junit.*;
 
 import proj.concert.common.dto.*;
-import proj.concert.common.jackson.LocalDateTimeDeserializer;
-import proj.concert.common.types.Genre;
+import proj.concert.common.jackson.types.Genre;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -17,10 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
