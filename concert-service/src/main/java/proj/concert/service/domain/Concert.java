@@ -1,8 +1,7 @@
 package proj.concert.service.domain;
 
-import java.time.LocalDate;
+import java.awt.print.Book;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,8 +9,6 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import proj.concert.common.jackson.LocalDateTimeDeserializer;
 import proj.concert.common.jackson.LocalDateTimeSerializer;
 
@@ -23,14 +20,22 @@ public class Concert implements Comparable<Concert>{
     private Long id;
 
     private String title;
+    private String image_name;
+    private String blurb;
 
+    @Transient
     private Set<LocalDateTime> dates =  new HashSet<LocalDateTime>();
 
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.ALL}, mappedBy = "concerts")
     private Set<Performer> performers = new HashSet<Performer>();
 
-    public Concert(Long id, String title, Set<LocalDateTime> dates){
-        this.id  =id;
+    @Transient
+    private Set<Booking> bookings = new HashSet<Booking>();
+
+    public Concert(Long id, String title, Set<LocalDateTime> dates, String image_name, String blurb){
+        this.id  = id;
+        this.image_name = image_name;
+        this.blurb = blurb;
         this.title = title;
         this.dates = dates;
     }
@@ -42,9 +47,6 @@ public class Concert implements Comparable<Concert>{
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;
@@ -76,6 +78,19 @@ public class Concert implements Comparable<Concert>{
     }
 
 
+    public String getImage_name() {
+        return image_name;
+    }
 
+    public void setImage_name(String image_name) {
+        this.image_name = image_name;
+    }
 
+    public String getBlurb() {
+        return blurb;
+    }
+
+    public void setBlurb(String blurb) {
+        this.blurb = blurb;
+    }
 }

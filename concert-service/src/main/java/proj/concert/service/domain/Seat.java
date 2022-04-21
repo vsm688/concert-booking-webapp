@@ -17,5 +17,37 @@ public class Seat{
 	public Seat(String label, boolean isBooked, LocalDateTime date, BigDecimal cost) {	
 	}	
 	
-	public Seat() {}	
+	public Seat() {}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public boolean isBooked() {
+		return isBooked;
+	}
+
+	public void setBooked(boolean booked) {
+		isBooked = booked;
+	}
+
+	public LocalDateTime getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDateTime date) {
+		this.date = date;
+	}
+
+	public BigDecimal getCost() {
+		return cost;
+	}
+
+	public void setCost(BigDecimal cost) {
+		this.cost = cost;
+	}
 }

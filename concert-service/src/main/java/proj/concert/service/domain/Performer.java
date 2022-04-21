@@ -1,20 +1,21 @@
 package proj.concert.service.domain;
 
-import proj.concert.common.jackson.types.BookingStatus;
 import proj.concert.common.jackson.types.Genre;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 
 @Entity
 public class Performer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String name;
     private String blurb;
-    private String imageURI;
+    private String image_name;
     private Genre genre;
 
     @ManyToMany(mappedBy = "performers")
@@ -25,18 +26,15 @@ public class Performer {
     public Performer(Long id, String blurb, String imageURI, Genre genre){
         this.id = id;
         this.blurb = blurb;
-        this.imageURI = imageURI;
+        this.image_name = imageURI;
         this.genre = genre;
     }
-
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+
 
     public String getBlurb() {
         return blurb;
@@ -46,12 +44,12 @@ public class Performer {
         this.blurb = blurb;
     }
 
-    public String getImageURI() {
-        return imageURI;
+    public String getImage_name() {
+        return image_name;
     }
 
-    public void setImageURI(String imageURI) {
-        this.imageURI = imageURI;
+    public void setImage_name(String image_name) {
+        this.image_name = image_name;
     }
 
     public Genre getGenre() {
