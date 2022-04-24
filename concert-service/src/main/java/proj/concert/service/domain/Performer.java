@@ -8,6 +8,7 @@ import java.util.Set;
 
 
 @Entity
+@Table(name = "PERFORMERS")
 public class Performer {
 
     @Id
@@ -15,10 +16,16 @@ public class Performer {
     private Long id;
     private String name;
     private String blurb;
+
+    @Column(name = "IMAGE_NAME")
     private String image_name;
+
+    @Enumerated(EnumType.STRING)
     private Genre genre;
 
+//    Create associative table to map the many to many association between Performer and concert.
     @ManyToMany(mappedBy = "performers")
+    @JoinTable(name ="CONCERT_PERFORMER", inverseJoinColumns = @JoinColumn(name = "CONCERT_ID"),joinColumns = @JoinColumn(name = "PERFORMER_ID" ) )
     private Set<Concert> concerts = new HashSet<Concert>();
 
     public Performer(){}

@@ -7,8 +7,12 @@ import proj.concert.common.jackson.LocalDateTimeSerializer;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Entity
+@Table(name = "BOOKINGS")
 public class Booking {
 
     @Id
@@ -16,18 +20,19 @@ public class Booking {
     private Long id;
 
     @ManyToOne
-
+    @JoinColumn(name = "USER_ID")
     private User user;
 
-    @ManyToOne
-    private Concert concert;
+    private LocalDateTime date;
 
+    // Gives booking ownership of seats, by placing it as a foreign key in the seat table.
+    @OneToMany(mappedBy = "booking")
+    private Set<Seat> seats = new HashSet<>();
     public Booking(){}
 
     public Booking(Long id, User user, Concert concert){
         this.id = id;
         this.user = user;
-        this.concert = concert;
 
     }
 
@@ -48,11 +53,4 @@ public class Booking {
         return id;
     }
 
-    public Concert getConcert() {
-        return concert;
-    }
-
-    public void setConcert(Concert concert) {
-        this.concert = concert;
-    }
 }

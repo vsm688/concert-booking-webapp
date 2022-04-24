@@ -1,6 +1,7 @@
 package proj.concert.service.domain;
 
 import java.awt.print.Book;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +14,8 @@ import proj.concert.common.jackson.LocalDateTimeDeserializer;
 import proj.concert.common.jackson.LocalDateTimeSerializer;
 
 @Entity
-public class Concert implements Comparable<Concert>{
+@Table(name = "CONCERTS")
+public class Concert implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,15 +24,15 @@ public class Concert implements Comparable<Concert>{
     private String title;
     private String image_name;
     private String blurb;
-
-    @Transient
+    //    CONCERT_DATES table
+    @ElementCollection
+    @CollectionTable(name = "CONCERT_DATES", joinColumns = @JoinColumn(name = "CONCERT_ID"))
+    @Column(name = "DATE", unique = true)
     private Set<LocalDateTime> dates =  new HashSet<LocalDateTime>();
 
-    @ManyToMany(cascade = {CascadeType.ALL}, mappedBy = "concerts")
-    private Set<Performer> performers = new HashSet<Performer>();
-
-    @Transient
-    private Set<Booking> bookings = new HashSet<Booking>();
+//    Dont need this field.
+//    @Transient
+//    private Set<Booking> bookings = new HashSet<Booking>();
 
     public Concert(Long id, String title, Set<LocalDateTime> dates, String image_name, String blurb){
         this.id  = id;
@@ -66,13 +68,6 @@ public class Concert implements Comparable<Concert>{
         this.dates = dates;
     }
 
-    public Set<Performer> getPerformers(){
-        return performers;
-    }
-
-    public void setPerformers(Set<Performer> performers){
-        this.performers = performers;
-    }
     public int compareTo(Concert concert) {
         return title.compareTo(concert.title);
     }

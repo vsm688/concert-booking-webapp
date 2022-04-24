@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "USERS")
 public class User {
 
     @Id
@@ -15,9 +16,9 @@ public class User {
     private String username;
     private String password;
     private Long version;
-
-    @ManyToOne
-    private Set<Booking> bookings = new HashSet<Booking>();
+    // Owner class/instance is a user (mappedBy).
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "user")
+    private Set<Booking> bookings = new HashSet<>();
 
 
     public Long getId() {

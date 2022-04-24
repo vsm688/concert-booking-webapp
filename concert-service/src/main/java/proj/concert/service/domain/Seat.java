@@ -1,22 +1,41 @@
 package proj.concert.service.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Embeddable
-public class Seat{
-
+@Entity
+@Table(name ="SEATS")
+@IdClass(SeatCompositeKey.class)
+public class Seat {
+	@Id
     private String label;
-	private boolean isBooked;
+	@Id
 	private LocalDateTime date;
 	private BigDecimal cost;
 
-	public Seat(String label, boolean isBooked, LocalDateTime date, BigDecimal cost) {	
-	}	
-	
+	// if a seat has not been booked, its bookingID will be null. this does not prevent a seat from being booked twice.
+	@ManyToOne
+	@JoinColumn(name = "Booking_ID")
+	private Booking booking;
+
+	public Seat(String label, boolean isBooked, LocalDateTime date, BigDecimal cost) {
+		this.label = label;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
 	public Seat() {}
 
 	public String getLabel() {
@@ -25,14 +44,6 @@ public class Seat{
 
 	public void setLabel(String label) {
 		this.label = label;
-	}
-
-	public boolean isBooked() {
-		return isBooked;
-	}
-
-	public void setBooked(boolean booked) {
-		isBooked = booked;
 	}
 
 	public LocalDateTime getDate() {
@@ -50,4 +61,6 @@ public class Seat{
 	public void setCost(BigDecimal cost) {
 		this.cost = cost;
 	}
+
 }
+
