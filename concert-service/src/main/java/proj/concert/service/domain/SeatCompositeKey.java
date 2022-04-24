@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class SeatCompositeKey implements Serializable {
-    private static final long serialVersionUID =  1L;
     private String label;
     private LocalDateTime date;
 
