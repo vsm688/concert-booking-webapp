@@ -4,6 +4,7 @@ import proj.concert.common.jackson.types.Genre;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -41,8 +42,6 @@ public class Performer {
         return id;
     }
 
-
-
     public String getBlurb() {
         return blurb;
     }
@@ -73,5 +72,26 @@ public class Performer {
 
     public void setConcerts(Set<Concert> concerts) {
         this.concerts = concerts;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, blurb, image_name, genre);
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Performer)) {
+            return false;
+        }
+        Performer other = (Performer) obj;
+        return Objects.equals(id, other.id) &&
+                Objects.equals(blurb, other.blurb) &&
+                Objects.equals(image_name, other.image_name) &&
+                Objects.equals(genre, other.genre);
+
     }
 }

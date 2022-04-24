@@ -2,17 +2,14 @@ package proj.concert.service.domain;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-//Identify seat uniquely via label and date ( for a specific concert ).
 public class SeatCompositeKey implements Serializable {
-
-
+    private static final long serialVersionUID =  1L;
     private String label;
     private LocalDateTime date;
 
-    public SeatCompositeKey(){
-
-    }
+    public SeatCompositeKey(){}
 
     public SeatCompositeKey(String label, LocalDateTime date){
         this.label = label;
@@ -21,11 +18,19 @@ public class SeatCompositeKey implements Serializable {
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return Objects.hash(label, date);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof SeatCompositeKey)) {
+            return false;
+        }
+        SeatCompositeKey other = (SeatCompositeKey) obj;
+        return Objects.equals(label, other.label) &&
+                Objects.equals(date, other.date);
     }
 }

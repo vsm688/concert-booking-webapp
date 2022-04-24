@@ -1,18 +1,17 @@
 package proj.concert.service.domain;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name ="SEATS")
+@Table(name = "SEATS")
 @IdClass(SeatCompositeKey.class)
-public class Seat {
+public class Seat{
 	@Id
     private String label;
+	private boolean isBooked;
 	@Id
 	private LocalDateTime date;
 	private BigDecimal cost;
@@ -24,16 +23,9 @@ public class Seat {
 
 	public Seat(String label, boolean isBooked, LocalDateTime date, BigDecimal cost) {
 		this.label = label;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return super.equals(obj);
-	}
-
-	@Override
-	public int hashCode() {
-		return super.hashCode();
+		this.isBooked = isBooked;
+		this.date = date;
+		this.cost = cost;
 	}
 
 	public Seat() {}
@@ -62,5 +54,24 @@ public class Seat {
 		this.cost = cost;
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(date, label, cost);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof Seat)) {
+			return false;
+		}
+		Seat other = (Seat) obj;
+		return Objects.equals(label, other.label) &&
+				Objects.equals(isBooked, other.isBooked) &&
+				Objects.equals(date, other.date) &&
+				Objects.equals(cost, other.cost);
+	}
 }
 

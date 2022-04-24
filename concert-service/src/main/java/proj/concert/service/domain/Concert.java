@@ -4,6 +4,7 @@ import java.awt.print.Book;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -88,4 +89,26 @@ public class Concert implements Serializable {
     public void setBlurb(String blurb) {
         this.blurb = blurb;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, dates, image_name, blurb);
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Concert)) {
+            return false;
+        }
+        Concert other = (Concert) obj;
+        return Objects.equals(id, other.id) &&
+                Objects.equals(title, other.title) &&
+                Objects.equals(dates, other.dates) &&
+                Objects.equals(image_name, other.image_name) &&
+                Objects.equals(blurb, other.blurb);
+    }
+
 }
