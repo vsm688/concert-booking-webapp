@@ -25,8 +25,7 @@ public class Booking {
 
     private LocalDateTime date;
 
-    // Gives booking ownership of seats, by placing it as a foreign key in the seat table.
-    @OneToMany(mappedBy = "booking")
+    @OneToMany
     private Set<Seat> seats = new HashSet<>();
     public Booking(){}
 

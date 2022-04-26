@@ -23,6 +23,8 @@ public class Concert implements Serializable {
 
     private String title;
     private String image_name;
+
+    @Lob
     private String blurb;
     //    CONCERT_DATES table
     @ElementCollection
@@ -33,7 +35,9 @@ public class Concert implements Serializable {
 //    Dont need this field.
 //    @Transient
 //    private Set<Booking> bookings = new HashSet<Booking>();
-
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(name ="CONCERT_PERFORMER", joinColumns = @JoinColumn(name = "CONCERT_ID"), inverseJoinColumns = @JoinColumn(name = "PERFORMER_ID"))
+    private Set<Performer> performers = new HashSet<Performer>();
     public Concert(Long id, String title, Set<LocalDateTime> dates, String image_name, String blurb){
         this.id  = id;
         this.image_name = image_name;

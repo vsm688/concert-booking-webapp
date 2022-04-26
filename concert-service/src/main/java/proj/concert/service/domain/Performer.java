@@ -15,6 +15,8 @@ public class Performer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
+    @Lob
     private String blurb;
 
     @Column(name = "IMAGE_NAME")
@@ -22,11 +24,6 @@ public class Performer {
 
     @Enumerated(EnumType.STRING)
     private Genre genre;
-
-//    Create associative table to map the many to many association between Performer and concert.
-    @ManyToMany(mappedBy = "performers")
-    @JoinTable(name ="CONCERT_PERFORMER", inverseJoinColumns = @JoinColumn(name = "CONCERT_ID"),joinColumns = @JoinColumn(name = "PERFORMER_ID" ) )
-    private Set<Concert> concerts = new HashSet<Concert>();
 
     public Performer(){}
 
@@ -67,11 +64,4 @@ public class Performer {
         this.genre = genre;
     }
 
-    public Set<Concert> getConcerts() {
-        return concerts;
-    }
-
-    public void setConcerts(Set<Concert> concerts) {
-        this.concerts = concerts;
-    }
 }

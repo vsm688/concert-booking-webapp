@@ -1,9 +1,12 @@
 package proj.concert.service.domain;
 
+import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 //Identify seat uniquely via label and date ( for a specific concert ).
+
+@Embeddable
 public class SeatCompositeKey implements Serializable {
 
 

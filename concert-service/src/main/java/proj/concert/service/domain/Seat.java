@@ -1,5 +1,7 @@
 package proj.concert.service.domain;
 
+import org.hibernate.engine.internal.Cascade;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -11,19 +13,28 @@ import java.util.Objects;
 @Table(name ="SEATS")
 @IdClass(SeatCompositeKey.class)
 public class Seat {
+
+
+
 	@Id
-    private String label;
-	@Id
-	private LocalDateTime date;
+	@Column(name = "LABEL")
+	private String label;
+	@Column(name = "COST")
 	private BigDecimal cost;
 
-	// if a seat has not been booked, its bookingID will be null. this does not prevent a seat from being booked twice.
-	@ManyToOne
-	@JoinColumn(name = "Booking_ID")
-	private Booking booking;
+	@Id
+	@Column(name = "DATE")
+	private LocalDateTime date;
+
+	private Boolean isBooked;
+
 
 	public Seat(String label, boolean isBooked, LocalDateTime date, BigDecimal cost) {
+
 		this.label = label;
+		this.isBooked = isBooked;
+		this.date = date;
+		this.cost = cost;
 	}
 
 	@Override
