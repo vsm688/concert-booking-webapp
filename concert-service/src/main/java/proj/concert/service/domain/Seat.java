@@ -3,18 +3,14 @@ package proj.concert.service.domain;
 import org.hibernate.engine.internal.Cascade;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name ="SEATS")
+@Table(name = "SEATS")
 @IdClass(SeatCompositeKey.class)
 public class Seat {
-
-
 
 	@Id
 	@Column(name = "LABEL")
@@ -35,16 +31,6 @@ public class Seat {
 		this.isBooked = isBooked;
 		this.date = date;
 		this.cost = cost;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return super.equals(obj);
-	}
-
-	@Override
-	public int hashCode() {
-		return super.hashCode();
 	}
 
 	public Seat() {}
@@ -73,5 +59,25 @@ public class Seat {
 		this.cost = cost;
 	}
 
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(date, label, cost);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof Seat)) {
+			return false;
+		}
+		Seat other = (Seat) obj;
+		return Objects.equals(label, other.label) &&
+				Objects.equals(isBooked, other.isBooked) &&
+				Objects.equals(date, other.date) &&
+				Objects.equals(cost, other.cost);
+	}
 }
 

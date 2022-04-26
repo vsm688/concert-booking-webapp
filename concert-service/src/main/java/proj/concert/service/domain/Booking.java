@@ -8,6 +8,7 @@ import proj.concert.common.jackson.LocalDateTimeSerializer;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -25,6 +26,7 @@ public class Booking {
 
     private LocalDateTime date;
 
+
     @OneToMany
     private Set<Seat> seats = new HashSet<>();
     public Booking(){}
@@ -32,7 +34,6 @@ public class Booking {
     public Booking(Long id, User user, Concert concert){
         this.id = id;
         this.user = user;
-
     }
 
     public Booking (User user, Concert concert){
@@ -51,5 +52,25 @@ public class Booking {
     public Long getId() {
         return id;
     }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(id, user, date);
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Booking)) {
+            return false;
+        }
+        Booking other = (Booking) obj;
+        return Objects.equals(id, other.id) &&
+                Objects.equals(user, other.user) &&
+                Objects.equals(date, other.date);
+    }
+
 
 }

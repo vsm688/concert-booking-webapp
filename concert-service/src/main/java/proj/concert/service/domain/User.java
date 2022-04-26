@@ -4,6 +4,7 @@ package proj.concert.service.domain;
 import javax.persistence.*;
 import java.awt.print.Book;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -47,5 +48,23 @@ public class User {
 
     public void setVersion(long version) {
         this.version = version;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, password);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof User)) {
+            return false;
+        }
+        User other = (User) obj;
+        return Objects.equals(username, other.username) &&
+                Objects.equals(password, other.password);
     }
 }
