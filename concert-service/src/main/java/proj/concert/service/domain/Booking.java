@@ -24,6 +24,8 @@ public class Booking {
     @JoinColumn(name = "USER_ID")
     private User user;
 
+
+
     private LocalDateTime date;
 
 
@@ -47,6 +49,14 @@ public class Booking {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public Set<Seat> getSeats() {
+        return seats;
     }
 
     public Long getId() {

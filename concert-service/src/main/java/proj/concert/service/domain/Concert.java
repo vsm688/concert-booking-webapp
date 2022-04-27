@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import proj.concert.common.jackson.LocalDateTimeDeserializer;
 import proj.concert.common.jackson.LocalDateTimeSerializer;
+import proj.concert.service.jaxrs.LocalDateTimeParam;
 
 @Entity
 @Table(name = "CONCERTS")
@@ -28,17 +29,17 @@ public class Concert implements Serializable {
     @Lob
     private String blurb;
     //    CONCERT_DATES table
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "CONCERT_DATES", joinColumns = @JoinColumn(name = "CONCERT_ID"))
     @Column(name = "DATE", unique = true)
-    private Set<LocalDateTime> dates =  new HashSet<LocalDateTime>();
+    private Set<LocalDateTime> dates =  new HashSet<>();
 
-//    Dont need this field.
-//    @Transient
-//    private Set<Booking> bookings = new HashSet<Booking>();
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name ="CONCERT_PERFORMER", joinColumns = @JoinColumn(name = "CONCERT_ID"), inverseJoinColumns = @JoinColumn(name = "PERFORMER_ID"))
-    private Set<Performer> performers = new HashSet<Performer>();
+    private Set<Performer> performers = new HashSet<>();
+
+
+
     public Concert(Long id, String title, Set<LocalDateTime> dates, String image_name, String blurb){
         this.id  = id;
         this.image_name = image_name;
@@ -93,6 +94,10 @@ public class Concert implements Serializable {
     public void setBlurb(String blurb) {
         this.blurb = blurb;
     }
+
+    public void setPerformers(Set<Performer> performers) {this.performers = performers;}
+
+    public Set<Performer> getPerformers() {return performers;}
 
     @Override
     public int hashCode() {

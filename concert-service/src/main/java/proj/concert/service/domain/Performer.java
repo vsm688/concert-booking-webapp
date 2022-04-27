@@ -28,12 +28,18 @@ public class Performer {
 
     public Performer(){}
 
-    public Performer(Long id, String blurb, String imageURI, Genre genre){
+    public Performer(Long id, String name, String blurb, String imageURI, Genre genre){
+
         this.id = id;
+        this.name = name;
         this.blurb = blurb;
         this.image_name = imageURI;
         this.genre = genre;
     }
+
+
+
+
 
     public Long getId() {
         return id;
@@ -61,6 +67,14 @@ public class Performer {
 
     public void setGenre(Genre genre) {
         this.genre = genre;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
