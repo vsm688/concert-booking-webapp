@@ -1,6 +1,7 @@
 package proj.concert.service.mapper;
 
 import proj.concert.common.dto.ConcertDTO;
+import proj.concert.common.dto.ConcertSummaryDTO;
 import proj.concert.common.dto.PerformerDTO;
 import proj.concert.service.domain.Concert;
 import proj.concert.service.domain.Performer;
@@ -25,4 +26,8 @@ public class ConcertMapper {
             cdto.setPerformers(performers);
             return cdto;
         }
+    public static ConcertSummaryDTO concertSummaryDTO(Concert concert){
+        return new ConcertSummaryDTO(concert.getId(), concert.getTitle(), concert.getImage_name());
+
+    }
 }
