@@ -6,6 +6,7 @@ import java.awt.print.Book;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "USERS")
@@ -16,10 +17,25 @@ public class User {
     private Long id;
     private String username;
     private String password;
+    @Version
     private Long version;
+
+    @Column(unique = true)
+    private UUID sessionId;
+
     // Owner class/instance is a user (mappedBy).
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "user")
     private Set<Booking> bookings = new HashSet<>();
+
+    public UUID getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(UUID sessionId) {
+        this.sessionId = sessionId;
+    }
+
+
 
 
     public Long getId() {
@@ -66,5 +82,9 @@ public class User {
         User other = (User) obj;
         return Objects.equals(username, other.username) &&
                 Objects.equals(password, other.password);
+    }
+
+    public Set<Booking> getBookings() {
+        return bookings;
     }
 }

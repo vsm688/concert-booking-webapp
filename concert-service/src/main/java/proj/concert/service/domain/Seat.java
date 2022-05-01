@@ -43,6 +43,7 @@ public class Seat {
 		this.label = label;
 	}
 
+
 	public LocalDateTime getDate() {
 		return date;
 	}
@@ -59,6 +60,13 @@ public class Seat {
 		this.cost = cost;
 	}
 
+	public Boolean getIsBooked(){
+		return isBooked;
+	}
+
+	public void setBooked(Boolean booked) {
+		isBooked = booked;
+	}
 
 	@Override
 	public int hashCode() {
