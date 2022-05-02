@@ -221,36 +221,47 @@ public class ConcertResource {
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
             em.getTransaction().begin();
-
-            Concert concert = em.createQuery("select c from Concert c where c.id= :concertId", Concert.class)
+            LocalDateTime date = bookingRequestDTO.getDate();
+            Concert concert;
+            try{
+            concert = em.createQuery("select c from Concert c where c.id= :concertId", Concert.class)
                     .setParameter("concertId", bookingRequestDTO.getConcertId())
                     .getSingleResult();
 
-            if(concert == null){
+            }catch(NoResultException e){
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+
+            if(!concert.getDates().contains(date)){
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
 
             List<String> seatLabels = bookingRequestDTO.getSeatLabels();
-            LocalDateTime date = bookingRequestDTO.getDate();
+
 
             List<Seat> seats = new ArrayList<>();
 
-            for(String labels: seatLabels){
+
+        try {
+            for (String labels : seatLabels) {
                 Seat validSeat = em.createQuery("select s from Seat s where s.isBooked=false and s.date = :date and s.label = :label", Seat.class)
                         .setParameter("date", date)
                         .setParameter("label", labels)
                         .getSingleResult();
                 seats.add(validSeat);
 
-            };
+            }
+        }catch(Exception e){
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
 
             Set<Seat> seatsSet = new HashSet<>();
-            for(Seat s: seats){
-                seatsSet.add(s);
-            }
+            seatsSet.addAll(seats);
 
             Booking booking = new Booking(bookingRequestDTO.getConcertId(), bookingRequestDTO.getDate(), seatsSet);
+
             booking.setUser(user);
+
             for(Seat s: seats){
                 s.setBooked(true);
             }
@@ -275,16 +286,18 @@ public class ConcertResource {
 
         EntityManager em = persistenceManager.createEntityManager();
         try{
-            em.getTransaction().begin();
+
             User user = getUserFromCookie(cookie, em);
             if(user == null){
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
+            em.getTransaction().begin();
 
 
             Booking booking = em.createQuery("select b from Booking b where b.id = :id", Booking.class)
                     .setParameter("id", id)
                     .getSingleResult();
+
 
 
             if(user.getId() != booking.getUser().getId()){
