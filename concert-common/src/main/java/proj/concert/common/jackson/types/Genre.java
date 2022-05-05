@@ -1,4 +1,4 @@
-package proj.concert.common.types;
+package proj.concert.common.jackson.types;
 
 /**
  * Enumerated type for classifying performers.

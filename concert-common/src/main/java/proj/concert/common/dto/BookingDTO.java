@@ -1,5 +1,10 @@
 package proj.concert.common.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import proj.concert.common.jackson.LocalDateTimeDeserializer;
+import proj.concert.common.jackson.LocalDateTimeSerializer;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +38,8 @@ public class BookingDTO {
         this.concertId = concertId;
     }
 
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     public LocalDateTime getDate() {
         return date;
     }

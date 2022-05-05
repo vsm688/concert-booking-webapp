@@ -3,7 +3,7 @@ package proj.concert.common.dto;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import proj.concert.common.types.Genre;
+import proj.concert.common.jackson.types.Genre;
 
 /**
  * DTO class to represent performers.
