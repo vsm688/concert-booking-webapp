@@ -13,6 +13,8 @@ import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.*;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.*;
 import java.awt.print.Book;
 import java.net.URI;
@@ -348,7 +350,45 @@ public class ConcertResource {
             em.close();
         }
     }
+    @POST
+    @Path("/subscribe/concertInfo")
+    public void concertSubscription (@Suspended AsyncResponse response, @CookieParam(AUTH_COOKIE) Cookie c, ConcertInfoSubscriptionDTO concertinDTO){
+        EntityManager em = persistenceManager.createEntityManager();
 
+        User subscriber = getUserFromCookie(c,em);
+        if (subscriber == null){
+            response.resume(Response.status(Response.Status.UNAUTHORIZED).build());
+            return;
+        }
+
+        try{
+            em.getTransaction().begin();
+            Concert concert;
+            Long lookUpID = concertinDTO.getConcertId();
+            LocalDateTime dateTime = concertinDTO.getDate();
+
+            try{
+                concert = em.createQuery("select concert from Concert concert where concert.id = :lookUpID",Concert.class)
+                        .setParameter("lookUpID", lookUpID)
+                        .getSingleResult();;
+            }
+            catch(Exception e){
+                response.resume(Response.status(400).build());
+                return;
+            }
+
+            if (!concert.getDates().contains(dateTime)){
+                response.resume(Response.status(400).build());
+                return;
+            }
+
+        }
+
+        finally {
+            em.close();
+        }
+
+    }
 
     private NewCookie makeCookie(User user, EntityManager em) {
         em.getTransaction().begin();

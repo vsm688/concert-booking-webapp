@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -663,53 +667,53 @@ public class ConcertResourceIT {
 ////    /**
 ////     * Tests that a 401 error is returned when trying to make a subscription while not authenticated.
 ////     */
-////    @Test
-////    public void testUnauthorizedSubscription() throws InterruptedException, ExecutionException, TimeoutException {
-////        // Attempt to subscribe
-////        LocalDateTime date = LocalDateTime.of(2020, 2, 15, 20, 0, 0);
-////        ConcertInfoSubscriptionDTO subInfo = new ConcertInfoSubscriptionDTO(1, date, 50);
-////        Future<Response> future = client.target(WEB_SERVICE_URI + "/subscribe/concertInfo")
-////                .request().async().post(Entity.json(subInfo));
-////
-////        // Wait for at most 1 second - the failure should be near-instant.
-////        Response response = future.get(1, TimeUnit.SECONDS);
-////
-////        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
-////    }
-////
+    @Test
+    public void testUnauthorizedSubscription() throws InterruptedException, ExecutionException, TimeoutException {
+        // Attempt to subscribe
+        LocalDateTime date = LocalDateTime.of(2020, 2, 15, 20, 0, 0);
+        ConcertInfoSubscriptionDTO subInfo = new ConcertInfoSubscriptionDTO(1, date, 50);
+        Future<Response> future = client.target(WEB_SERVICE_URI + "/subscribe/concertInfo")
+                .request().async().post(Entity.json(subInfo));
+
+        // Wait for at most 1 second - the failure should be near-instant.
+        Response response = future.get(1, TimeUnit.SECONDS);
+
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+    }
+
 ////    /**
 ////     * Tests that a 400 error is returned when trying to make a subscription for a nonexistent concert.
 ////     */
-////    @Test
-////    public void testBadSubscription_NonexistentConcert() throws InterruptedException, ExecutionException, TimeoutException {
-////
-////        testBadSubscription(100, LocalDateTime.of(2020, 2, 15, 20, 0, 0));
-////    }
-////
-////    /**
-////     * Tests that a 400 error is returned when trying to make a subscription for a nonexistent date.
-////     */
-////    @Test
-////    public void testBadSubscription_NonexistentDate() throws InterruptedException, ExecutionException, TimeoutException {
-////
-////        testBadSubscription(1, LocalDateTime.of(2030, 2, 15, 20, 0, 0));
-////    }
-////
-////    private void testBadSubscription(long concertId, LocalDateTime date) throws InterruptedException, ExecutionException, TimeoutException {
-////        // Log in
-////        login(client, "testuser", "pa55word");
-////
-////        // Attempt to subscribe
-////        ConcertInfoSubscriptionDTO subInfo = new ConcertInfoSubscriptionDTO(concertId, date, 50);
-////        Future<Response> future = client.target(WEB_SERVICE_URI + "/subscribe/concertInfo")
-////                .request().async().post(Entity.json(subInfo));
-////
-////        // Wait for at most 1 second - the failure should be near-instant.
-////        Response response = future.get(1, TimeUnit.SECONDS);
-////
-////        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-////    }
-////
+    @Test
+    public void testBadSubscription_NonexistentConcert() throws InterruptedException, ExecutionException, TimeoutException {
+
+        testBadSubscription(100, LocalDateTime.of(2020, 2, 15, 20, 0, 0));
+    }
+
+    /**
+     * Tests that a 400 error is returned when trying to make a subscription for a nonexistent date.
+     */
+    @Test
+    public void testBadSubscription_NonexistentDate() throws InterruptedException, ExecutionException, TimeoutException {
+
+        testBadSubscription(1, LocalDateTime.of(2030, 2, 15, 20, 0, 0));
+    }
+
+    private void testBadSubscription(long concertId, LocalDateTime date) throws InterruptedException, ExecutionException, TimeoutException {
+        // Log in
+        login(client, "testuser", "pa55word");
+
+        // Attempt to subscribe
+        ConcertInfoSubscriptionDTO subInfo = new ConcertInfoSubscriptionDTO(concertId, date, 50);
+        Future<Response> future = client.target(WEB_SERVICE_URI + "/subscribe/concertInfo")
+                .request().async().post(Entity.json(subInfo));
+
+        // Wait for at most 1 second - the failure should be near-instant.
+        Response response = future.get(1, TimeUnit.SECONDS);
+
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+    }
+
 ////    /**
 ////     * Tests that, when authenticated, a subscription can be made to /subscribe/concertInfo, and that subscribers are
 ////     * then notified when the conditions of their subscription are met. The subscribers won't be notified beforehand
