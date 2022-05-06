@@ -7,6 +7,7 @@ import proj.concert.service.mapper.BookingMapper;
 import proj.concert.service.mapper.ConcertMapper;
 import proj.concert.service.mapper.PerformerMapper;
 import proj.concert.service.mapper.SeatMapper;
+import proj.concert.service.util.TheatreLayout;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
@@ -21,6 +22,9 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Path("/concert-service")
 @Produces(MediaType.APPLICATION_JSON)
@@ -28,6 +32,8 @@ import java.util.*;
 public class ConcertResource {
 
     private PersistenceManager persistenceManager;
+    private static Map<LocalDateTime, ArrayList<SubTuple>> subs = new ConcurrentHashMap<>();
+
 
     public ConcertResource(){
         this.persistenceManager = PersistenceManager.instance();
@@ -269,6 +275,14 @@ public class ConcertResource {
             }
             em.persist(booking);
             em.getTransaction().commit();
+            LocalDateTime datet = bookingRequestDTO.getDate();
+
+            List<Seat> availableSeats = em.createQuery("select seat from Seat seat where seat.isBooked = false and seat.date = :datet", Seat.class)
+                    .setParameter("datet",date)
+                    .getResultList();
+
+            notifySubscribersIfLessThanPrecentageBooked (availableSeats.size() ,datet);
+
 
             return Response.created(URI.create("/concert-service/bookings/" + booking.getId())).build();
         }finally {
@@ -382,6 +396,15 @@ public class ConcertResource {
                 return;
             }
 
+            SubTuple st = new SubTuple(response,concertinDTO.getPercentageBooked(),concertinDTO);
+            // if a date exists return its associated arraylist otherwise return an empty arraylist.
+            ArrayList<SubTuple> subArr = subs.getOrDefault(concertinDTO.getDate(),new ArrayList<>());
+            System.out.println("this is the array here!" + subArr);
+            subArr.add(st);
+            System.out.println("this is the array here 2!" + subArr);
+            subs.put(concertinDTO.getDate(),subArr);
+            System.out.println("this is subs map" + subs);
+            em.getTransaction().commit();
         }
 
         finally {
@@ -389,6 +412,39 @@ public class ConcertResource {
         }
 
     }
+
+
+
+    public void notifySubscribersIfLessThanPrecentageBooked (int seatsLeft, LocalDateTime date){
+
+            try{
+                ArrayList<SubTuple> subscribers =  subs.get(date);
+                if (subscribers == null){
+                    return;
+                }
+                System.out.println("this is seats" + seatsLeft);
+                System.out.println("this is per row" + TheatreLayout.NUM_SEATS_PER_ROW);
+                System.out.println("this is rows" + TheatreLayout.NUM_ROWS);
+
+
+                double d = ((double) seatsLeft) / (double) (TheatreLayout.NUM_SEATS_PER_ROW * TheatreLayout.NUM_ROWS ) * 100.00;
+                int d2 = (int) d;
+
+                for (SubTuple s : subscribers){
+
+                    if (d2 <= s.getPercentageBooked()){
+
+                        s.getResponse().resume(Response.ok(new ConcertInfoNotificationDTO(seatsLeft)).build());
+
+                    }
+                }
+            }
+            catch (Exception e){
+                System.out.println("heres the error :( " + e);
+            }
+    }
+
+
 
     private NewCookie makeCookie(User user, EntityManager em) {
         em.getTransaction().begin();
