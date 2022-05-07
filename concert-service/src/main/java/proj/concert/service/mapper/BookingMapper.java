@@ -7,6 +7,8 @@ import proj.concert.service.domain.Booking;
 import java.util.ArrayList;
 import java.util.List;
 
+//A class which maps a booking to a bookingDTO
+
 public class BookingMapper {
     private BookingMapper(){}
 

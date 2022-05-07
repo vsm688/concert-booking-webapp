@@ -1,6 +1,9 @@
 package proj.concert.service.mapper;
 import proj.concert.common.dto.PerformerDTO;
 import proj.concert.service.domain.Performer;
+
+//A class which maps a performer to a performerDTO
+
 public class PerformerMapper {
 
     private PerformerMapper() {
