@@ -45,7 +45,6 @@ public class ConcertResource {
 
     @GET
     @Path("/concerts/{id}")
-
     public Response getConcert(@PathParam("id") long id) {
         EntityManager em = persistenceManager.createEntityManager();
         try {
@@ -71,9 +70,10 @@ public class ConcertResource {
         try {
             em.getTransaction().begin();
             TypedQuery<Concert> concertTypedQuery = em.createQuery("select c from Concert c", Concert.class);
-            List<Concert> concerts = concertTypedQuery.getResultList();
+            List<Concert> concerts = concertTypedQuery.getResultList(); // Gets the concerts
             if (concerts == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
+                // If concerts list null, return 404.
             }
 
             Set<ConcertDTO> concertDTOS = new HashSet<>();
@@ -98,14 +98,16 @@ public class ConcertResource {
             em.getTransaction().begin();
 
             TypedQuery<Performer> performerTypedQuery = em.createQuery("select p from Performer p", Performer.class);
-            List<Performer> performers = performerTypedQuery.getResultList();
+            List<Performer> performers = performerTypedQuery.getResultList(); // Gets the Performers
             if (performers == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
+                // If performers list empty, returns 404.
             }
 
             Set<PerformerDTO> performerDTOs = new HashSet<>();
             for (Performer p : performers) {
                 performerDTOs.add(PerformerMapper.toDTO(p));
+                // Users the PerformerMapper to convert Performer objects in to performerDTOs.
             }
             GenericEntity<Set<PerformerDTO>> retrievedPerformers = new GenericEntity<Set<PerformerDTO>>(performerDTOs) {
             };
@@ -128,20 +130,23 @@ public class ConcertResource {
         try {
             em.getTransaction().begin();
             Performer performer = em.find(Performer.class, id);
+            // Finds the performer by the Id.
 
             if (performer == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
+                //If performer not found, returns 404.
             }
             return Response.ok(PerformerMapper.toDTO(performer)).build();
+            // Uses PerformerMapper to convert the Performer object to performerDTO.
 
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().commit();
             }
-            em.close();
 
         }
     }
+
 
     @GET
     @Path("/concerts/summaries")
@@ -153,10 +158,12 @@ public class ConcertResource {
             List<Concert> concerts = concertTypedQuery.getResultList();
             if (concerts == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
+                //If concerts , return 404.
             }
             Set<ConcertSummaryDTO> concertSummaries = new HashSet<>();
             for (Concert c : concerts) {
                 concertSummaries.add(ConcertMapper.concertSummaryDTO(c));
+                // Uses concertMapper to map the Concert objects to concertDTO.
             }
             em.close();
             return Response.ok(concertSummaries).build();
@@ -187,7 +194,6 @@ public class ConcertResource {
         }finally{
             em.close();
         }
-
     }
 
     @GET
@@ -198,6 +204,7 @@ public class ConcertResource {
             User user = this.getUserFromCookie(cookie, em);
             if(user == null){
                 return Response.status(Response.Status.UNAUTHORIZED).build();
+                //If user not found, returns 401.
             }
              em.getTransaction().begin();
             List<Booking> bookings = em.createQuery("select b from Booking b where b.user.id = :userId", Booking.class)
@@ -208,9 +215,11 @@ public class ConcertResource {
             Set<BookingDTO> bookingDTOSet = new HashSet<>();
             for(Booking b: bookings){
                 bookingDTOSet.add(BookingMapper.toDTO(b));
+                // Uses BookingMapper to convert Booking objects in to bookingDTOs
             }
 
             GenericEntity<Set<BookingDTO>> retrievedBookings= new GenericEntity<Set<BookingDTO>>(bookingDTOSet){};
+            em.getTransaction().commit();
             return Response.ok(retrievedBookings).build();
 
 
@@ -226,24 +235,29 @@ public class ConcertResource {
     public Response createBooking( BookingRequestDTO bookingRequestDTO,@CookieParam(AUTH_COOKIE) Cookie cookie){
         EntityManager em = persistenceManager.createEntityManager();
         try {
+            em.getTransaction().begin();
+
             User user = getUserFromCookie(cookie, em);
             if(user == null){
                 return Response.status(Response.Status.UNAUTHORIZED).build();
+                //If user not found, returns 401.
             }
-            em.getTransaction().begin();
+
             LocalDateTime date = bookingRequestDTO.getDate();
             Concert concert;
-            try{
+            try{ //Gets concert by Id.
             concert = em.createQuery("select c from Concert c where c.id= :concertId", Concert.class)
                     .setParameter("concertId", bookingRequestDTO.getConcertId())
                     .getSingleResult();
 
-            }catch(NoResultException e){
+            }catch(Exception e){
                 return Response.status(Response.Status.BAD_REQUEST).build();
+                //If Concert not found, returns 400.
             }
 
             if(!concert.getDates().contains(date)){
                 return Response.status(Response.Status.BAD_REQUEST).build();
+                //If concert.dates doesnt contain the corresponding date, returns 400.
             }
 
             List<String> seatLabels = bookingRequestDTO.getSeatLabels();
@@ -278,7 +292,7 @@ public class ConcertResource {
                 s.setBooked(true);
             }
             em.persist(booking);
-            em.getTransaction().commit();
+
             LocalDateTime datet = bookingRequestDTO.getDate();
 
             List<Seat> availableSeats = em.createQuery("select seat from Seat seat where seat.isBooked = false and seat.date = :datet", Seat.class)
@@ -286,8 +300,7 @@ public class ConcertResource {
                     .getResultList();
 
             notifySubscribersIfLessThanPrecentageBooked (availableSeats.size() ,datet);
-
-
+            em.getTransaction().commit();
             return Response.created(URI.create("/concert-service/bookings/" + booking.getId())).build();
         }finally {
             if (em.getTransaction().isActive()) {
@@ -306,24 +319,26 @@ public class ConcertResource {
 
         EntityManager em = persistenceManager.createEntityManager();
         try{
-
+            em.getTransaction().begin();
             User user = getUserFromCookie(cookie, em);
             if(user == null){
                 return Response.status(Response.Status.UNAUTHORIZED).build();
+                //If user not found, returns 401.
             }
-            em.getTransaction().begin();
-
-
-            Booking booking = em.createQuery("select b from Booking b where b.id = :id", Booking.class)
-                    .setParameter("id", id)
-                    .getSingleResult();
-
-
-
+            Booking booking;
+            try {
+                // Gets booking by id.
+                booking = em.createQuery("select b from Booking b where b.id = :id", Booking.class)
+                        .setParameter("id", id)
+                        .getSingleResult();
+            }catch(Exception e){
+                return Response.status(Response.Status.NOT_FOUND).build();
+                //If booking not found, return 404 response.
+            }
             if(user.getId() != booking.getUser().getId()){
+                //If the user's id does not match with the book's user id, return 403 response.
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
-
             BookingDTO bookingDTO = BookingMapper.toDTO(booking);
             return Response.ok(bookingDTO).build();
 
@@ -334,6 +349,7 @@ public class ConcertResource {
         }
     }
 
+
     @GET
     @Path("/seats/{time}")
     public Response getSeats(@PathParam("time") LocalDateTimeParam localDateTimeParam, @QueryParam("status") String status){
@@ -342,17 +358,17 @@ public class ConcertResource {
         try{
             em.getTransaction().begin();
             List<Seat> seats;
-            if(status.equals("Any")){
+            if(status.equals("Any")){ //Gets all books with the corresponding date
                 seats = em.createQuery("select s from Seat s where s.date = :date", Seat.class)
                         .setParameter("date", localDateTime)
                         .getResultList();
             }
-            else if(status.equals("Booked")){
+            else if(status.equals("Booked")){//Gets all booked books with the corresponding date
                 seats = em.createQuery("select s from Seat s where s.date = :date and s.isBooked = true", Seat.class)
                         .setParameter("date", localDateTime)
                         .getResultList();
             }
-            else{
+            else{ //Gets all unbooked books with the corresponding date
                 seats = em.createQuery("select s from Seat s where s.date = :date and s.isBooked = false", Seat.class)
                         .setParameter("date", localDateTime)
                         .getResultList();
@@ -360,6 +376,7 @@ public class ConcertResource {
             List<SeatDTO> seatsDTO = new ArrayList<>();
             for(Seat s :  seats){
                 seatsDTO.add(SeatMapper.toDTO(s));
+                // Uses SeatMapper to map Seat objects to SeatDTOs
             }
 
             GenericEntity<List<SeatDTO>> listGenericEntity = new GenericEntity<List<SeatDTO>>(seatsDTO){};
@@ -461,21 +478,21 @@ public class ConcertResource {
         return new NewCookie(AUTH_COOKIE, user.getSessionId().toString());
     }
 
+
     private User getUserFromCookie(Cookie cookie, EntityManager em){
         if(cookie == null){
             return null;
+            //If cookie is null, the code should break.
         }
-
+        UUID sessionId = UUID.fromString(cookie.getValue());
+        //Gets the value from the given cookie then coverts to a UUID
         try{
-            em.getTransaction().begin();
             User user = (User)em.createQuery("select u from User u where u.sessionId= :sessionId")
-                    .setParameter("sessionId", UUID.fromString(cookie.getValue()))
+                    .setParameter("sessionId", sessionId)
                     .getSingleResult();
-
-            em.getTransaction().commit();
             return user;
-        }catch(NoResultException ignored){
-
+        }catch(Exception ignored){
+            //If results not found, passes then returns null.
         }
         return null;
 
