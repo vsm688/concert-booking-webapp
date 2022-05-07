@@ -29,7 +29,7 @@ public class Booking {
     private long concertId;
     private LocalDateTime date;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private Set<Seat> seats = new HashSet<>();
     public Booking(){}
 
