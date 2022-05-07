@@ -43,14 +43,15 @@ public class ConcertResource {
 
     public static final String AUTH_COOKIE = "auth";
 
+    //This method returns a concert with a specific id
     @GET
     @Path("/concerts/{id}")
     public Response getConcert(@PathParam("id") long id) {
         EntityManager em = persistenceManager.createEntityManager();
         try {
             em.getTransaction().begin();
-            Concert concert = em.find(Concert.class, id, LockModeType.PESSIMISTIC_READ);
-
+            Concert concert = em.find(Concert.class, id);
+            //find a concert in the concert class with the matching id
             if (concert == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -182,13 +183,16 @@ public class ConcertResource {
             User user;
             List<Long> id;
             id = (List<Long>) em.createQuery("SELECT user.id FROM User user WHERE user.username = :username").setParameter("username", userLogInAttempt.getUsername()).getResultList();
+            // I used a query which returned an array which would always contain 1 or no items as to avoid an error
             if(id.size() > 0){
                 user = em.find(User.class, id.get(0));
+                //Find the user associated with the ID
                 if(user.getUsername().equals(userLogInAttempt.getUsername()) && user.getPassword().equals(userLogInAttempt.getPassword())){
                     em.getTransaction().commit();
                     return Response.ok().cookie(makeCookie(user, em)).build();
                 }
             }
+            //If there's nothing in the array, it means there isn't a user associated that matches the username and password
             em.getTransaction().commit();
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }finally{
@@ -469,7 +473,7 @@ public class ConcertResource {
     }
 
 
-
+    //Helper method which returns a cookie
     private NewCookie makeCookie(User user, EntityManager em) {
         em.getTransaction().begin();
         em.lock(user, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
