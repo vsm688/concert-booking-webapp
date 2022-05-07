@@ -7,10 +7,16 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ *  Class that represents a seat within a concert.
+ *  It is uniquely identified by a combination of label and date ( links it to a specific concert )
+ *
+ */
 @Entity
 @Table(name = "SEATS")
 @IdClass(SeatCompositeKey.class)
 public class Seat {
+	// Version used for optimistic concurrency control
 	@Version
 	private long version;
 	@Id

@@ -5,7 +5,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-
+/**
+ *  Class that represents a composite key which uses label and date to uniquely identify a seat.
+ *
+ */
 //Identify seat uniquely via label and date ( for a specific concert ).
 
 @Embeddable

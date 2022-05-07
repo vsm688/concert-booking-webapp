@@ -8,6 +8,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ *  Class that represents a User which can create bookings.
+ *
+ */
 @Entity
 @Table(name = "USERS")
 public class User {
@@ -23,7 +27,8 @@ public class User {
     @Column(unique = true)
     private UUID sessionId;
 
-    // Owner class/instance is a user (mappedBy).
+    // Owner class/instance is a user (mappedBy). We additionally use CascadeType.REMOVE to delete all associated bookings
+    // if a user is deleted
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "user")
     private Set<Booking> bookings = new HashSet<>();
 

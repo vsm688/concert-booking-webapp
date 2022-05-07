@@ -7,6 +7,10 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Class that represents a performer
+ *
+ **/
 
 @Entity
 @Table(name = "PERFORMERS")
@@ -17,6 +21,7 @@ public class Performer {
     private Long id;
     private String name;
 
+    // Using @Lob since blurb can be very long.
     @Lob
     private String blurb;
 

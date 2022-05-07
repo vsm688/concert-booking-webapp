@@ -14,7 +14,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import proj.concert.common.jackson.LocalDateTimeDeserializer;
 import proj.concert.common.jackson.LocalDateTimeSerializer;
 import proj.concert.service.jaxrs.LocalDateTimeParam;
-
+/**
+ *  Class that represents a concert
+ *
+ */
 @Entity
 @Table(name = "CONCERTS")
 public class Concert implements Serializable {
@@ -28,12 +31,16 @@ public class Concert implements Serializable {
 
     @Lob
     private String blurb;
-    //    CONCERT_DATES table
+    //    CONCERT_DATES associative table, which represents that one concert being associated with many dates.
+    //    We assume dates cannot be duplicated.
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "CONCERT_DATES", joinColumns = @JoinColumn(name = "CONCERT_ID"))
     @Column(name = "DATE", unique = true)
     private Set<LocalDateTime> dates =  new HashSet<>();
 
+    //   FetchType Lazy because we don't need to load performers every time a concert is loaded.
+    //   Associative table that links Many concerts to Many performers by storing concertID and PerformerID in each row
+    //   Does this with @JoinColumn.
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name ="CONCERT_PERFORMER", joinColumns = @JoinColumn(name = "CONCERT_ID"), inverseJoinColumns = @JoinColumn(name = "PERFORMER_ID"))
     private Set<Performer> performers = new HashSet<>();
