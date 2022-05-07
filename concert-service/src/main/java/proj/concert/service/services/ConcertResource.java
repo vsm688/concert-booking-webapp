@@ -32,6 +32,8 @@ import java.util.concurrent.Executors;
 public class ConcertResource {
 
     private PersistenceManager persistenceManager;
+
+    // Map that holds each concert date with its associated subscribers ( contained in the SubTuple class ).
     private static Map<LocalDateTime, ArrayList<SubTuple>> subs = new ConcurrentHashMap<>();
 
 
@@ -253,9 +255,11 @@ public class ConcertResource {
         try {
             for (String labels : seatLabels) {
                 Seat validSeat = em.createQuery("select s from Seat s where s.isBooked=false and s.date = :date and s.label = :label", Seat.class)
+                        .setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
                         .setParameter("date", date)
                         .setParameter("label", labels)
                         .getSingleResult();
+
                 seats.add(validSeat);
 
             }
@@ -397,11 +401,12 @@ public class ConcertResource {
             }
 
             SubTuple st = new SubTuple(response,concertinDTO.getPercentageBooked(),concertinDTO);
-            // if a date exists return its associated arraylist otherwise return an empty arraylist.
+            // if a date exists return its associated arraylist otherwise return a new empty arraylist.
             ArrayList<SubTuple> subArr = subs.getOrDefault(concertinDTO.getDate(),new ArrayList<>());
             System.out.println("this is the array here!" + subArr);
             subArr.add(st);
-            System.out.println("this is the array here 2!" + subArr);
+
+            // After adding tuples to the array push this array using the concert date as a key.
             subs.put(concertinDTO.getDate(),subArr);
             System.out.println("this is subs map" + subs);
             em.getTransaction().commit();
@@ -419,6 +424,7 @@ public class ConcertResource {
 
             try{
                 ArrayList<SubTuple> subscribers =  subs.get(date);
+                // return if there are no subscribers associated with a date ( concert )
                 if (subscribers == null){
                     return;
                 }
@@ -426,10 +432,11 @@ public class ConcertResource {
                 System.out.println("this is per row" + TheatreLayout.NUM_SEATS_PER_ROW);
                 System.out.println("this is rows" + TheatreLayout.NUM_ROWS);
 
-
+                // calculate percentage of seats that are left, convert to int to compare with the each subscriber.
                 double d = ((double) seatsLeft) / (double) (TheatreLayout.NUM_SEATS_PER_ROW * TheatreLayout.NUM_ROWS ) * 100.00;
                 int d2 = (int) d;
-
+                // Iterate through subscribers, if the percentage of a concert booked is less than the percentage they mentioned
+                // then send a notification to the subscriber (resume async response ).
                 for (SubTuple s : subscribers){
 
                     if (d2 <= s.getPercentageBooked()){

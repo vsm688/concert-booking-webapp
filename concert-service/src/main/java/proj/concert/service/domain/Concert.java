@@ -34,7 +34,7 @@ public class Concert implements Serializable {
     @Column(name = "DATE", unique = true)
     private Set<LocalDateTime> dates =  new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name ="CONCERT_PERFORMER", joinColumns = @JoinColumn(name = "CONCERT_ID"), inverseJoinColumns = @JoinColumn(name = "PERFORMER_ID"))
     private Set<Performer> performers = new HashSet<>();
 
