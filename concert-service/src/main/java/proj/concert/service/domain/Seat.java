@@ -11,7 +11,8 @@ import java.util.Objects;
 @Table(name = "SEATS")
 @IdClass(SeatCompositeKey.class)
 public class Seat {
-
+	@Version
+	private long version;
 	@Id
 	@Column(name = "LABEL")
 	private String label;
