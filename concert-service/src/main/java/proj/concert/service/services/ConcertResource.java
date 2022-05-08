@@ -302,7 +302,7 @@ public class ConcertResource {
             List<Seat> availableSeats = em.createQuery("select seat from Seat seat where seat.isBooked = false and seat.date = :datet", Seat.class)
                     .setParameter("datet",date)
                     .getResultList();
-
+            // After a booking is made, notify all subscribers who have subscribed to a Concert on a specific date.
             notifySubscribersIfLessThanPrecentageBooked (availableSeats.size() ,datet);
             em.getTransaction().commit();
             return Response.created(URI.create("/concert-service/bookings/" + booking.getId())).build();
