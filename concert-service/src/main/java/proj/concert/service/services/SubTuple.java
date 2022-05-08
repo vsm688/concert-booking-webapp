@@ -4,25 +4,24 @@ import proj.concert.common.dto.ConcertInfoSubscriptionDTO;
 
 import javax.ws.rs.container.AsyncResponse;
 import java.time.LocalDateTime;
+/**
+ * class that holds an async response associated with a subscriber as well as the in DTO.
+ */
 
 public class SubTuple {
 
     private AsyncResponse response;
-    private int percentageBooked;
-
     private ConcertInfoSubscriptionDTO concertInDTO;
 
-    public SubTuple(AsyncResponse r, int p, ConcertInfoSubscriptionDTO c){
+    public SubTuple(AsyncResponse r, ConcertInfoSubscriptionDTO c){
         this.response = r;
-
-        this.percentageBooked = p;
-
         this.concertInDTO = c;
 
     }
 
     public int getPercentageBooked(){
-        return percentageBooked;
+        // return the booking percentage that was set in the DTO.
+        return concertInDTO.getPercentageBooked();
     }
     public AsyncResponse getResponse(){
         return response;

@@ -421,7 +421,7 @@ public class ConcertResource {
                 return;
             }
 
-            SubTuple st = new SubTuple(response,concertinDTO.getPercentageBooked(),concertinDTO);
+            SubTuple st = new SubTuple(response,concertinDTO);
             // if a date exists return its associated arraylist otherwise return a new empty arraylist.
             ArrayList<SubTuple> subArr = subs.getOrDefault(concertinDTO.getDate(),new ArrayList<>());
             System.out.println("this is the array here!" + subArr);
