@@ -1,6 +1,9 @@
 Project - A Concert Booking Service
 ==========
 
+Grade: 30/30 ( A+ )
+
+
 The aim of this project is to build a Web service for concert booking. 
 
 System description
